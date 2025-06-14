@@ -1,3 +1,6 @@
+from sys import argv
+from random import randint
+
 def indeksy(wej):
     wej.pop(0)
     for i in range(len(wej)):
@@ -33,6 +36,7 @@ def alg_AD(wej, licz_elem, rozmiar):
     return wynik
 
 def alg_AZ(wej,licz_elem,rozmiar):
+    oryg_rozm = rozmiar
     rozmiar2=rozmiar
     indeksy=[]
     suma=0
@@ -51,7 +55,7 @@ def alg_AZ(wej,licz_elem,rozmiar):
             break
         else:
             continue
-    if alg_AD(wej,licz_elem,rozmiar)==suma:
+    if alg_AD(wej,licz_elem,oryg_rozm)==suma:
         print("Algorytm optymalny dla danego przypadku")
     else:
         print("Algorytm suboptymalny dla danego przypadku")
@@ -79,32 +83,53 @@ def alg_AB(wej,licz_elem,rozmiar):
     print("Maksymalna wartość:",maksymalne)
     print("Wybrane przedmioty (indeksy):", wybrane_przedmioty)
 
+def gen_lista(num, poj):
+    lista = [(num,poj)]
+    for _ in range(num):
+        rozm=randint(1, 20)
+        wart=randint(1,50)
+        lista.append((rozm, wart))
+    return lista
 
 def main():
-    wej=[]
-    print("===WYBÓR PODAWANIA DANYCH===")
-    print("Podaj w jaki sposób podasz dane wejściowe:\n1. Plik tekstowy\n2. Wpisywanie ręczne\n0. Wyjście")
-    n=int(input("Liczba(0-2):"))
-    print("===WYBÓR ALGORYTMU===")
-    print("Podaj algorytm roziwązywania problemu plecakowego 0-1:\n1. Algorytm programowania dynamicznego\n2. Algorytm zachłanny\n3. Algorytm siłowy\n0. Wyjście")
-    m=int(input("Liczba(0-3):"))
-    match(n):
-        case 0:
-            exit(0)
-        case 1:
-            f=open("c.txt","r")
-            for i in f:
-                wej.append(list(map(int,i.split())))
-        case 2:
-            print("Podaj dane tak że: pierwszy wiersz to para liczb n b (liczba przedmiotów, pojemność plecaka),\n kolejne wiersze to pary liczb r w (rozmiar przedmiotu, wartość przedmiotu).\n Spacja jest separatorem liczb w pojedynczej linii.:\n")
-            i,j=map(int,input().split())
-            wej.append([i,j])
-            for k in range(i):
-                wej.append(list(map(int,input().split())))
-        case _:
-            print("Bład! Podałeś liczbę z poza zakresu 0-2.")
-    licz_elem=wej[0][0]
-    rozmiar=wej[0][1]
+    if (len(argv) == 4):
+        num = int(argv[1])
+        m = int(argv[3]) # który algorytm używamy
+        if (int(argv[2]) == 1): # Jeżeli drugi argument pozycyjny == 1 => poprzednia wartość to pojemność, 2 => liczba przedmiotów, inna liczba to pojemność plecaka, a poprzednia to liczba przedmiotów
+            rozmiar = num
+            licz_elem = 1000
+        elif(int(argv[2] == 2)):
+            licz_elem = num
+            rozmiar = 1000
+        else:
+            licz_elem = num
+            rozmiar = argv[3]
+        wej = gen_lista(rozmiar, licz_elem)
+    else:
+        wej=[]
+        print("===WYBÓR PODAWANIA DANYCH===")
+        print("Podaj w jaki sposób podasz dane wejściowe:\n1. Plik tekstowy\n2. Wpisywanie ręczne\n0. Wyjście")
+        n=int(input("Liczba(0-2):"))
+        print("===WYBÓR ALGORYTMU===")
+        print("Podaj algorytm roziwązywania problemu plecakowego 0-1:\n1. Algorytm programowania dynamicznego\n2. Algorytm zachłanny\n3. Algorytm siłowy\n0. Wyjście")
+        m=int(input("Liczba(0-3):"))
+        match(n):
+            case 0:
+                exit(0)
+            case 1:
+                f=open("c.txt","r")
+                for i in f:
+                    wej.append(list(map(int,i.split())))
+            case 2:
+                print("Podaj dane tak że: pierwszy wiersz to para liczb n b (liczba przedmiotów, pojemność plecaka),\n kolejne wiersze to pary liczb r w (rozmiar przedmiotu, wartość przedmiotu).\n Spacja jest separatorem liczb w pojedynczej linii.:\n")
+                i,j=map(int,input().split())
+                wej.append([i,j])
+                for k in range(i):
+                    wej.append(list(map(int,input().split())))
+            case _:
+                print("Bład! Podałeś liczbę z poza zakresu 0-2.")
+        licz_elem=wej[0][0]
+        rozmiar=wej[0][1]
     wej=indeksy(wej)
     match(m):
             case 1:
@@ -114,7 +139,7 @@ def main():
             case 3:
                 alg_AB(wej,licz_elem,rozmiar)
             case _:
-                print("Bład! Podałeś liczbę z poza zakresu 0-2.") 
+                    print("Bład! Podałeś liczbę z poza zakresu 0-2.") 
 
 if __name__ == "__main__":
     main()
