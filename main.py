@@ -1,5 +1,6 @@
 from sys import argv
 from random import randint
+import time
 
 def indeksy(wej):
     wej.pop(0)
@@ -55,10 +56,12 @@ def alg_AZ(wej,licz_elem,rozmiar):
             break
         else:
             continue
-    if alg_AD(wej,licz_elem,oryg_rozm)==suma:
-        print("Algorytm optymalny dla danego przypadku")
-    else:
-        print("Algorytm suboptymalny dla danego przypadku")
+
+    # if alg_AD(wej,licz_elem,oryg_rozm)==suma:
+    #     print("Algorytm optymalny dla danego przypadku")
+    # else:
+    #     print("Algorytm suboptymalny dla danego przypadku")
+
     print("\nWartość uzyskana: \n"+str(suma))
     print("Indeksy przedmiotów umieszczonych w plecaku(zaczynając od 1): \n"+str(indeksy))
 
@@ -84,27 +87,50 @@ def alg_AB(wej,licz_elem,rozmiar):
     print("Wybrane przedmioty (indeksy):", wybrane_przedmioty)
 
 def gen_lista(num, poj):
-    lista = [(num,poj)]
+    lista = [[num,poj]]
     for _ in range(num):
-        rozm=randint(1, 20)
-        wart=randint(1,50)
-        lista.append((rozm, wart))
+        rozm=randint(1, 10)
+        wart=randint(1,20)
+        lista.append([rozm, wart])
     return lista
 
 def main():
-    if (len(argv) == 4):
+    if (len(argv) == 3):
         num = int(argv[1])
-        m = int(argv[3]) # który algorytm używamy
-        if (int(argv[2]) == 1): # Jeżeli drugi argument pozycyjny == 1 => poprzednia wartość to pojemność, 2 => liczba przedmiotów, inna liczba to pojemność plecaka, a poprzednia to liczba przedmiotów
+        assert num > 0
+        if (int(argv[2]) == 1): # Jeżeli drugi argument pozycyjny == 1 => poprzednia wartość to liczba elementów, 2 => pojemność, inna liczba to pojemność plecaka, a poprzednia to liczba przedmiotów
+            licz_elem = num
+            rozmiar = 30 if num <= 25 else 200
+        elif(int(argv[2]) == 2):
             rozmiar = num
-            licz_elem = 1000
-        elif(int(argv[2] == 2)):
-            licz_elem = num
-            rozmiar = 1000
+            licz_elem = 10 
         else:
+            assert int(argv[2]) > 0
             licz_elem = num
-            rozmiar = argv[3]
-        wej = gen_lista(rozmiar, licz_elem)
+            rozmiar = int(argv[2])
+
+        wej = gen_lista(licz_elem, rozmiar)
+        wej = indeksy(wej)
+
+        start1 = time.time()
+        alg_AD(wej, licz_elem, rozmiar)
+        end1 = time.time()
+        len1 = end1 - start1
+
+        start2 = time.time()
+        alg_AZ(wej, licz_elem, rozmiar)
+        end2 = time.time()
+        len2 = end2 - start2
+
+        len3 = -1
+        if (licz_elem <= 25):
+            start3 = time.time()
+            alg_AB(wej, licz_elem, rozmiar)
+            end3 = time.time()
+            len3 = end3 - start3
+
+        print(f"N = {licz_elem}, b = {rozmiar} zmierzono (ms): \n{len1*1000:.2f}:{len2*1000:.2f}:{len3*1000:.2f}")
+
     else:
         wej=[]
         print("===WYBÓR PODAWANIA DANYCH===")
@@ -130,16 +156,16 @@ def main():
                 print("Bład! Podałeś liczbę z poza zakresu 0-2.")
         licz_elem=wej[0][0]
         rozmiar=wej[0][1]
-    wej=indeksy(wej)
-    match(m):
-            case 1:
-                alg_AD(wej,licz_elem,rozmiar)
-            case 2:
-                alg_AZ(wej,licz_elem,rozmiar)
-            case 3:
-                alg_AB(wej,licz_elem,rozmiar)
-            case _:
-                    print("Bład! Podałeś liczbę z poza zakresu 0-2.") 
+        wej=indeksy(wej)
+        match(m):
+                case 1:
+                    alg_AD(wej,licz_elem,rozmiar)
+                case 2:
+                    alg_AZ(wej,licz_elem,rozmiar)
+                case 3:
+                    alg_AB(wej,licz_elem,rozmiar)
+                case _:
+                        print("Bład! Podałeś liczbę z poza zakresu 1-3.") 
 
 if __name__ == "__main__":
     main()
